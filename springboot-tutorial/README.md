@@ -1,7 +1,7 @@
 # Fagdag Spring Boot
 
 Denne er en kopi av Frode Johansen sitt fagdag repo. Som du finner på
-(Github)[https://github.com/frodejohansen/springboot].
+[Github](https://github.com/frodejohansen/springboot).
 
 Velkommen  til fagdag med : Spring Boot
 

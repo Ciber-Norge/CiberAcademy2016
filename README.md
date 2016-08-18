@@ -16,3 +16,6 @@ Hver container har en makefile som lar deg enkelt bygge, kjøre og stoppe contai
 * JDK 1.8 or later
 * Maven 3.0 or later
 * Docker 1.6.2 or later
+
+## Springboot-tutorial
+Spring Boot tutorial mappen inneholder tre enkle Spring Boot prosjekter som man kan utforske. Den har sin egen [README.md](springboot-tutorial/README.md).

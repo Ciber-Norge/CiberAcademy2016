@@ -13,3 +13,10 @@ hs_err_pid*
 
 # Target-folder
 target/
+springboot-tutorial/SpringBootNr1/target/
+springboot-tutorial/SpringBootNr2/target/
+springboot-tutorial/SpringBootNr3/target/
+
+# IDEA files
+.idea
+*.iml

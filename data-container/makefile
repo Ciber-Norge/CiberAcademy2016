@@ -4,3 +4,5 @@ run:
 	sudo docker run -d --name data data-container
 clean:
 	sudo docker rm data
+start:
+	sudo docker start data

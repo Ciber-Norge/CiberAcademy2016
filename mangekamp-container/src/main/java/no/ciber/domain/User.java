@@ -2,18 +2,15 @@ package no.ciber.domain;
 
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Date;
 
 @Data
-@Entity
+@Entity(name = "users")
 public class User {
 
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false)
 	private Long id;
 	@Column(nullable = false)
@@ -21,12 +18,12 @@ public class User {
 	private String email;
 	@Column(nullable = false)
 	private String sex;
-	@Column(nullable = false, columnDefinition = "false")
+	@Column(nullable = false, columnDefinition = "boolean DEFAULT false")
 	private boolean retired;
-	@Column(name = "created_at", nullable = false)
-	private Date createdAt;
-	@Column(name = "updated_at", nullable = false)
-	private Date updatedAt;
+//	@Column(name = "created_at", nullable = false)
+//	private Date createdAt;
+//	@Column(name = "updated_at", nullable = false)
+//	private Date updatedAt;
 
 	public User() {
 	}
@@ -34,7 +31,7 @@ public class User {
 	public User(String name, String sex) {
 		this.name = name;
 		this.sex = sex;
-		createdAt = new Date();
-		updatedAt = createdAt;
+//		createdAt = new Date();
+//		updatedAt = createdAt;
 	}
 }

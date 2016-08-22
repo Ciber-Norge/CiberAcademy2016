@@ -1,6 +1,8 @@
 package no.ciber.domain;
 
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -20,18 +22,13 @@ public class User {
 	private String sex;
 	@Column(nullable = false, columnDefinition = "boolean DEFAULT false")
 	private boolean retired;
-//	@Column(name = "created_at", nullable = false)
-//	private Date createdAt;
-//	@Column(name = "updated_at", nullable = false)
-//	private Date updatedAt;
+	@CreationTimestamp
+	@Column(name = "created_at", nullable = false)
+	private Date createdAt;
+	@UpdateTimestamp
+	@Column(name = "updated_at", nullable = false)
+	private Date updatedAt;
 
 	public User() {
-	}
-
-	public User(String name, String sex) {
-		this.name = name;
-		this.sex = sex;
-//		createdAt = new Date();
-//		updatedAt = createdAt;
 	}
 }

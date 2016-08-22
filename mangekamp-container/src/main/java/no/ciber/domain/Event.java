@@ -4,6 +4,7 @@ import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,7 +12,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Entity(name = "events")
@@ -31,10 +34,14 @@ public class Event {
     private Date date;
     @ManyToOne(targetEntity = Season.class)
     @JoinColumn(name = "season_id", nullable = false)
-    private Long season;
+    private Season season;
     @ManyToOne(targetEntity = Category.class)
     @JoinColumn(name = "category_id", nullable = false)
-    private Long category;
+    private Category category;
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
+    private List<Participant> participants;
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
+    private List<Result> results;
     @CreationTimestamp
     @Column(name = "created_at", nullable = false)
     private Date createdAt;

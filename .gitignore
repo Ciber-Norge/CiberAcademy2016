@@ -17,6 +17,12 @@ springboot-tutorial/SpringBootNr1/target/
 springboot-tutorial/SpringBootNr2/target/
 springboot-tutorial/SpringBootNr3/target/
 
+# Javascript
+mangekamp-container/src/main/resources/static/bower_components
+mangekamp-container/src/main/resources/static/node_modules
+mangekamp-container/src/main/resources/static/node
+mangekamp-container/src/main/resources/static/built
+
 # IDEA files
 .idea
 *.iml

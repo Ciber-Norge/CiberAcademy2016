@@ -15,6 +15,7 @@ class App extends React.Component {
 		this.updatePageSize = this.updatePageSize.bind(this);
 		this.onCreate = this.onCreate.bind(this);
 		this.onNavigate = this.onNavigate.bind(this);
+		this.onDelete = this.onDelete.bind(this);
 	}
 
     loadFromServer(pageSize) {
@@ -65,6 +66,12 @@ class App extends React.Component {
     	});
     }
 
+    onDelete(user) {
+    	client({method: 'DELETE', path: user._links.self.href}).done(response => {
+    		this.loadFromServer(this.state.pageSize);
+    	});
+    }
+
 	componentDidMount() {
 		this.loadFromServer(this.state.pageSize);
 	}
@@ -83,6 +90,7 @@ class App extends React.Component {
 			                    links={this.state.links}
 			                    pageSize={this.state.pageSize}
 			                    onNavigate={this.onNavigate}
+			                    onDelete={this.onDelete}
 			                    updatePageSize={this.updatePageSize}/>
 		    </div>
 		)
@@ -143,6 +151,10 @@ class UserList extends React.Component{
 
 	constructor(props) {
 		super(props);
+		this.handleNavFirst = this.handleNavFirst.bind(this);
+        this.handleNavPrev = this.handleNavPrev.bind(this);
+        this.handleNavNext = this.handleNavNext.bind(this);
+        this.handleNavLast = this.handleNavLast.bind(this);
 		this.handleInput = this.handleInput.bind(this);
     }
 
@@ -156,20 +168,62 @@ class UserList extends React.Component{
     			pageSize.substring(0, pageSize.length - 1);
     	}
     }
+
+    handleNavFirst(e){
+    	e.preventDefault();
+    	this.props.onNavigate(this.props.links.first.href);
+    }
+
+    handleNavPrev(e) {
+    	e.preventDefault();
+    	this.props.onNavigate(this.props.links.prev.href);
+    }
+
+    handleNavNext(e) {
+    	e.preventDefault();
+    	this.props.onNavigate(this.props.links.next.href);
+    }
+
+    handleNavLast(e) {
+    	e.preventDefault();
+    	this.props.onNavigate(this.props.links.last.href);
+    }
+
 	render() {
 	    console.log(this.props.users)
 		var users = this.props.users.map(user =>
-			<User key={user._links.self.href} user={user}/>
+			<User key={user._links.self.href} user={user} onDelete={this.props.onDelete}/>
 		);
+
+		var navLinks = [];
+        if ("first" in this.props.links) {
+        	navLinks.push(<button key="first" onClick={this.handleNavFirst}>&lt;&lt;</button>);
+        }
+        if ("prev" in this.props.links) {
+        	navLinks.push(<button key="prev" onClick={this.handleNavPrev}>&lt;</button>);
+        }
+        if ("next" in this.props.links) {
+        	navLinks.push(<button key="next" onClick={this.handleNavNext}>&gt;</button>);
+        }
+        if ("last" in this.props.links) {
+        	navLinks.push(<button key="last" onClick={this.handleNavLast}>&gt;&gt;</button>);
+        }
+
 		return (
-			<table>
-				<tr>
-					<th>Name</th>
-					<th>E-Mail</th>
-					<th>Sex</th>
-				</tr>
-				{users}
-			</table>
+		    <div>
+        	<input ref="pageSize" defaultValue={this.props.pageSize} onInput={this.handleInput}/>
+			    <table>
+				    <tr>
+					    <th>Name</th>
+					    <th>E-Mail</th>
+					    <th>Sex</th>
+				    </tr>
+				    {users}
+			    </table>
+			    <div>
+            	    {navLinks}
+                </div>
+            </div>
 		)
 	}
 }
@@ -177,14 +231,21 @@ class UserList extends React.Component{
 class User extends React.Component{
 	constructor(props) {
 		super(props);
+	    this.handleDelete = this.handleDelete.bind(this);
 	}
 
+	handleDelete() {
+		this.props.onDelete(this.props.user);
+	}
 	render() {
 		return (
 			<tr>
 				<td>{this.props.user.name}</td>
 				<td>{this.props.user.email}</td>
 				<td>{this.props.user.sex}</td>
+				<td>
+                	<button onClick={this.handleDelete}>Delete</button>
+                </td>
 			</tr>
 		)
 	}

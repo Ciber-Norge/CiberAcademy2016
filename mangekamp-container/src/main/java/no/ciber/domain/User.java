@@ -1,5 +1,6 @@
 package no.ciber.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -15,6 +16,7 @@ public class User {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false)
 	private Long id;
+
 	@Column(nullable = false)
 	private String name;
 	private String email;
@@ -22,12 +24,15 @@ public class User {
 	private String sex;
 	@Column(nullable = false, columnDefinition = "boolean DEFAULT false")
 	private boolean retired;
+
 	@CreationTimestamp
-	@Column(name = "created_at", nullable = false)
+    @JsonIgnore
+    @Column(name = "created_at", nullable = false)
 	private Date createdAt;
 	@UpdateTimestamp
-	@Column(name = "updated_at", nullable = false)
-	private Date updatedAt;
+    @JsonIgnore
+    @Column(name = "updated_at", nullable = false)
+    private Date updatedAt;
 
 	public User() {
 	}

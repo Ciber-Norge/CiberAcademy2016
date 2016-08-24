@@ -1,8 +1,8 @@
 'use strict';
 
 const React = require('react');
+const when = require('when');
 const client = require('./client');
-
 const follow = require('./follow');
 
 const root = '/api';
@@ -14,6 +14,7 @@ class App extends React.Component {
 		this.state = {users: [], attributes: [], pageSize: 20, links:{}};
 		this.updatePageSize = this.updatePageSize.bind(this);
 		this.onCreate = this.onCreate.bind(this);
+		this.onUpdate = this.onUpdate.bind(this);
 		this.onNavigate = this.onNavigate.bind(this);
 		this.onDelete = this.onDelete.bind(this);
 	}
@@ -28,14 +29,25 @@ class App extends React.Component {
                 headers: {'Accept' : 'application/schema+json'}
             }).then(schema => {
                 this.schema = schema.entity;
+                this.links = userCollection.entity._links;
                 return userCollection;
             });
-        }).done(userCollection => {
+        }).then(userCollection => {
+            return userCollection.entity._embedded.users.map(user =>
+                        client({
+                            method: 'GET',
+                            path: user._links.self.href
+                        })
+            );
+        }).then(userPromises => {
+            return when.all(userPromises);
+        }).done(users => {
             this.setState({
-                users: userCollection.entity._embedded.users,
+                users: users,
                 attributes: Object.keys(this.schema.properties),
                 pageSize: pageSize,
-                links: userCollection.entity._links});
+                links: this.links
+            });
         });
     }
 
@@ -55,19 +67,51 @@ class App extends React.Component {
    		});
    	}
 
+    onUpdate(user, updatedUser) {
+    		client({
+    			method: 'PUT',
+    			path: user.entity._links.self.href,
+    			entity: updatedUser,
+    			headers: {
+    			    'Content-Type': 'application/json',
+    		}
+    	}).done(response => {
+    		this.loadFromServer(this.state.pageSize);
+    	}, response => {
+		    if (response.status.code === 412) {
+			    alert('DENIED: Unable to update ' +
+				    user.entity._links.self.href + '. Your copy is stale.');
+		    }
+    	});
+    }
+
     onNavigate(navUri) {
-    	client({method: 'GET', path: navUri}).done(userCollection => {
+    	client({method: 'GET', path: navUri
+    	}).then(userCollection=> {
+    	    this.links = userCollection.entity._links;
+    	    this.page = userCollection.entity.page;
+
+    	    return userCollection.entity._embedded.users.map(user =>
+    	                        client({
+    	                            method: 'GET',
+    	                            path: user._links.self.href
+    	                            })
+    	    );
+    	}).then(userPromises => {
+    	    return when.all(userPromises);
+    	}).done(users => {
     		this.setState({
-    			users: userCollection.entity._embedded.users,
-    			attributes: this.state.attributes,
+    			users: users,
+    			attributes: Object.keys(this.schema.properties),//this.state.attributes,
     			pageSize: this.state.pageSize,
-    			links: userCollection.entity._links
+    			links: this.links
     		});
     	});
     }
 
     onDelete(user) {
-    	client({method: 'DELETE', path: user._links.self.href}).done(response => {
+    	client({method: 'DELETE', path: user.entity._links.self.href
+    	}).done(response => {
     		this.loadFromServer(this.state.pageSize);
     	});
     }
@@ -86,10 +130,13 @@ class App extends React.Component {
 		return (
 		    <div>
 		        <CreateDialog attributes={this.state.attributes} onCreate={this.onCreate}/>
-			    <UserList users={this.state.users}
+			    <UserList page={this.state.page}
+			                    users={this.state.users}
 			                    links={this.state.links}
 			                    pageSize={this.state.pageSize}
+			                    attributes={this.state.attributes}
 			                    onNavigate={this.onNavigate}
+			                    onUpdate={this.onUpdate}
 			                    onDelete={this.onDelete}
 			                    updatePageSize={this.updatePageSize}/>
 		    </div>
@@ -108,7 +155,7 @@ class CreateDialog extends React.Component {
 		e.preventDefault();
 		var newUser = {};
 		this.props.attributes.forEach(attribute => {
-			newUser[attribute] = React.findDOMNode(this.refs[attribute]).value.trim();
+		    newUser[attribute] = React.findDOMNode(this.refs[attribute]).value.trim();
 		});
 		this.props.onCreate(newUser);
 
@@ -122,18 +169,18 @@ class CreateDialog extends React.Component {
 	}
 
 	render() {
-		var inputs = this.props.attributes.map(attribute =>
-			<p key={attribute}>
-				<input type="text" placeholder={attribute} ref={attribute} className="field" />
-			</p>
+	    var inputs = this.props.attributes.map(attribute =>
+				    <p key={attribute}>
+    				    <input type="text" placeholder={attribute} ref={attribute} className="field" />
+    			    </p>
 		);
 
 		return (
 			<div>
-				<a href="#createUser">Create</a>
+			    <a href="#createUser">Create</a>
 				<div id="createUser" className="modalDialog">
 					<div>
-						<a href="#" title="Close" className="close">X</a>
+					    <a href="#" title="Close" className="close">X</a>
 						<h2>Create new user</h2>
 						<form>
 							{inputs}
@@ -146,6 +193,54 @@ class CreateDialog extends React.Component {
 	}
 }
 
+class UpdateDialog extends React.Component {
+
+	constructor(props) {
+		super(props);
+		this.handleSubmit = this.handleSubmit.bind(this);
+	}
+
+	handleSubmit(e) {
+		e.preventDefault();
+		var updatedUser = {};
+		this.props.attributes.forEach(attribute => {
+			updatedUser[attribute] = React.findDOMNode(this.refs[attribute]).value.trim();
+		});
+		this.props.onUpdate(this.props.user, updatedUser);
+		window.location = "#";
+	}
+
+	render() {
+		var inputs = this.props.attributes.map(attribute =>
+				<p key={this.props.user.entity[attribute]}>
+					<input type="text" placeholder={attribute}
+						   defaultValue={this.props.user.entity[attribute]}
+						   ref={attribute} className="field" />
+				</p>
+		);
+
+		var dialogId = "updateUser-" + this.props.user.entity._links.self.href;
+
+		return (
+			<div key={this.props.user.entity._links.self.href}>
+				<a href={"#" + dialogId}>Update</a>
+				<div id={dialogId} className="modalDialog">
+					<div>
+						<a href="#" title="Close" className="close">X</a>
+
+						<h2>Oppdater en bruker</h2>
+
+						<form>
+							{inputs}
+							<button onClick={this.handleSubmit}>Update</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		)
+	}
+
+};
 
 class UserList extends React.Component{
 
@@ -190,9 +285,13 @@ class UserList extends React.Component{
     }
 
 	render() {
-	    console.log(this.props.users)
+
 		var users = this.props.users.map(user =>
-			<User key={user._links.self.href} user={user} onDelete={this.props.onDelete}/>
+			<User key={user.entity._links.self.href}
+			            user={user}
+			            attributes={this.props.attributes}
+			            onUpdate={this.props.onUpdate}
+			            onDelete={this.props.onDelete}/>
 		);
 
 		var navLinks = [];
@@ -217,6 +316,8 @@ class UserList extends React.Component{
 					    <th>Name</th>
 					    <th>E-Mail</th>
 					    <th>Sex</th>
+					    <th></th>
+					    <th></th>
 				    </tr>
 				    {users}
 			    </table>
@@ -240,9 +341,14 @@ class User extends React.Component{
 	render() {
 		return (
 			<tr>
-				<td>{this.props.user.name}</td>
-				<td>{this.props.user.email}</td>
-				<td>{this.props.user.sex}</td>
+				<td>{this.props.user.entity.name}</td>
+				<td>{this.props.user.entity.email}</td>
+				<td>{this.props.user.entity.sex}</td>
+				<td>
+                    <UpdateDialog user={this.props.user}
+                	                attributes={this.props.attributes}
+                					onUpdate={this.props.onUpdate}/>
+                </td>
 				<td>
                 	<button onClick={this.handleDelete}>Delete</button>
                 </td>

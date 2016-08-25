@@ -1,4 +1,4 @@
-package no.ciber.domain;
+package no.ciber;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -47,6 +47,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth
                 .inMemoryAuthentication()
-                .withUser("Mangekamp").password("strengtpassord").roles("ADMIN");
+                .withUser("Mangekamp").password("123").roles("ADMIN");
     }
 }

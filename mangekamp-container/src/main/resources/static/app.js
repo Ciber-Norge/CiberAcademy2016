@@ -2,6 +2,8 @@
 
 const React = require('react');
 const when = require('when');
+const Events = require('./components/event-form.js');
+const Seasons = require('./components/season-form.js');
 const client = require('./client');
 const follow = require('./follow');
 
@@ -11,7 +13,7 @@ class App extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {users: [], attributes: [], pageSize: 20, links:{}};
+		this.state = {users: [], attributes: [], events: [], seasons: [], pageSize: 20, links:{}};
 		this.updatePageSize = this.updatePageSize.bind(this);
 		this.onCreate = this.onCreate.bind(this);
 		this.onUpdate = this.onUpdate.bind(this);
@@ -20,6 +22,7 @@ class App extends React.Component {
 	}
 
     loadFromServer(pageSize) {
+        // Populate 'users'
         follow(client, root, [
             {rel: 'users', params: {size: pageSize}}]
         ).then(userCollection => {
@@ -49,6 +52,65 @@ class App extends React.Component {
                 links: this.links
             });
         });
+        // Populate 'events'
+        follow(client, root, [
+                {rel: 'events'}]
+        ).then(eventCollection => {
+            return client({
+                    method: 'GET',
+                    path: eventCollection.entity._links.profile.href,
+                    headers: {'Accept' : 'application/schema+json'}
+            }).then(schema => {
+                this.schema = schema.entity;
+                this.links = eventCollection.entity._links;
+                return eventCollection;
+            });
+        }).then(eventCollection => {
+            return eventCollection.entity._embedded.events.map(event =>
+                    client({
+                        method: 'GET',
+                        path: event._links.self.href
+                    })
+            );
+        }).then(eventPromises => {
+            return when.all(eventPromises);
+        }).done(events => {
+            this.setState({
+                events: events,
+                attributes: Object.keys(this.schema.properties),
+                links: this.links
+            });
+        });
+        // Populate 'seasons'
+        follow(client, root, [
+                {rel: 'seasons'}]
+        ).then(seasonCollection => {
+            return client({
+                method: 'GET',
+                    path: seasonCollection.entity._links.profile.href,
+                    headers: {'Accept' : 'application/schema+json'}
+                }).then(schema => {
+                    this.schema = schema.entity;
+                    this.links = seasonCollection.entity._links;
+                    return seasonCollection;
+            });
+        }).then(seasonCollection => {
+            return seasonCollection.entity._embedded.seasons.map(season =>
+                    client({
+                        method: 'GET',
+                        path: season._links.self.href
+                    })
+            );
+        }).then(seasonPromises => {
+            return when.all(seasonPromises);
+        }).done(seasons => {
+            this.setState({
+                seasons: seasons,
+                attributes: Object.keys(this.schema.properties),
+                links: this.links
+            });
+        });
+
     }
 
     onCreate(newUser) {
@@ -102,7 +164,7 @@ class App extends React.Component {
     	}).done(users => {
     		this.setState({
     			users: users,
-    			attributes: Object.keys(this.schema.properties),//this.state.attributes,
+    			attributes: Object.keys(this.schema.properties),
     			pageSize: this.state.pageSize,
     			links: this.links
     		});
@@ -139,6 +201,12 @@ class App extends React.Component {
 			                    onUpdate={this.onUpdate}
 			                    onDelete={this.onDelete}
 			                    updatePageSize={this.updatePageSize}/>
+                <Events events={this.state.events}
+                                links={this.state.links}
+                                attributes={this.state.attributes}/>
+                <Seasons seasons={this.state.seasons}
+                                links={this.state.links}
+                                attributes={this.state.attributes}/>
 		    </div>
 		)
 	}
@@ -241,6 +309,8 @@ class UpdateDialog extends React.Component {
 	}
 
 };
+
+
 
 class UserList extends React.Component{
 

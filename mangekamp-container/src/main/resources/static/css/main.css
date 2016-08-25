@@ -1,11 +1,22 @@
-table {
-    border-collapse: collapse;
+
+.navbar-list {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
 }
 
-td, th {
-    border: 1px solid #999;
-    padding: 0.5rem;
-    text-align: left;
+.navbar-item {
+    display: inline;
+    margin-right: 20px;
+}
+
+.navbar-item a {
+    color: #333;s
+     text-decoration: none;
+}
+
+.navbar-item a:hover {
+
 }
 
 .modalDialog {

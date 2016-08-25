@@ -26,6 +26,10 @@
     "webpack": "^1.12.2"
   },
   "scripts": {
-    "watch": "webpack --watch -d"
+    "watch": "webpack --watch -d",
+    "start": "webpack-dev-server --port 8181"
+  },
+  "devDependencies": {
+    "webpack-dev-server": "^1.15.0"
   }
 }

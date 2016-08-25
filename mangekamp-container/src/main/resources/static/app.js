@@ -5,7 +5,9 @@ const when = require('when');
 const client = require('./client');
 const follow = require('./follow');
 
-const root = '/api';
+const Navbar = require('./components/navbar');
+
+const root = 'http://localhost:8080/api';
 
 class App extends React.Component {
 
@@ -129,16 +131,19 @@ class App extends React.Component {
 	render() {
 		return (
 		    <div>
-		        <CreateDialog attributes={this.state.attributes} onCreate={this.onCreate}/>
-			    <UserList page={this.state.page}
-			                    users={this.state.users}
-			                    links={this.state.links}
-			                    pageSize={this.state.pageSize}
-			                    attributes={this.state.attributes}
-			                    onNavigate={this.onNavigate}
-			                    onUpdate={this.onUpdate}
-			                    onDelete={this.onDelete}
-			                    updatePageSize={this.updatePageSize}/>
+		        <Navbar />
+		        <div className="container">
+                    <CreateDialog attributes={this.state.attributes} onCreate={this.onCreate}/>
+                    <UserList page={this.state.page}
+                                    users={this.state.users}
+                                    links={this.state.links}
+                                    pageSize={this.state.pageSize}
+                                    attributes={this.state.attributes}
+                                    onNavigate={this.onNavigate}
+                                    onUpdate={this.onUpdate}
+                                    onDelete={this.onDelete}
+                                    updatePageSize={this.updatePageSize}/>
+			    </div>
 		    </div>
 		)
 	}
@@ -310,19 +315,27 @@ class UserList extends React.Component{
 
 		return (
 		    <div>
-        	<input ref="pageSize" defaultValue={this.props.pageSize} onInput={this.handleInput}/>
-			    <table>
-				    <tr>
-					    <th>Name</th>
-					    <th>E-Mail</th>
-					    <th>Sex</th>
-					    <th></th>
-					    <th></th>
-				    </tr>
-				    {users}
-			    </table>
-			    <div>
-            	    {navLinks}
+                <div className="row">
+                    <input ref="pageSize" defaultValue={this.props.pageSize} onInput={this.handleInput}/>
+                </div>
+                <div className="row">
+                    <table className="u-full-width">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>E-Mail</th>
+                                <th>Sex</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {users}
+                        </tbody>
+                    </table>
+                    <div>
+                        {navLinks}
+                    </div>
                 </div>
             </div>
 		)

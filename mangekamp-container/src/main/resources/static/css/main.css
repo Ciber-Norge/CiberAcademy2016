@@ -1,11 +1,31 @@
-table {
-    border-collapse: collapse;
+
+.navbar {
+    border-bottom: 1px solid #eee;
+    margin-bottom: 20px
 }
 
-td, th {
-    border: 1px solid #999;
-    padding: 0.5rem;
-    text-align: left;
+.navbar-brand {
+     font-size: 16px;
+     font-weight: 600px;
+ }
+
+.navbar-list {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar-item {
+    display: inline;
+    margin-right: 20px;
+
+}
+
+.navbar-item a {
+    color: #333;s
+    text-decoration: none;
+    height: 50px;
+    padding: 15px 15px 15px 0;
 }
 
 .modalDialog {

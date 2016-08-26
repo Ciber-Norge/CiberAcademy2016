@@ -16,10 +16,8 @@ export default class EventPage extends React.Component{
 
     loadFromServer() {
             client({method: 'GET', path: root+'/events/'+this.state.id}).done(response => {
-                console.log(response);
                     this.setState({event: response.entity});
                         client({method: 'GET', path: this.state.event._links.results.href}).done(response => {
-               	            console.log(response);
                	            this.setState({results: response.entity._embedded.results, hasLoaded: true});
           	            });
             });
@@ -31,9 +29,6 @@ export default class EventPage extends React.Component{
     }
 
     render() {
-        console.log(this.state.event);
-        console.log(this.state.results);
-
         // Should just be a callback instead.
         if(!this.state.hasLoaded) {
             return (<div></div>)

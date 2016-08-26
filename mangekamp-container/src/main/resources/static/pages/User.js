@@ -3,6 +3,7 @@ const React = require('react');
 const when = require('when');
     const client = require('./../client');
 const follow = require('./../follow');
+import { Link } from 'react-router'
 
 const root = 'http://localhost:8080/api';
 
@@ -128,6 +129,8 @@ export default class UserPage extends React.Component {
 	render() {
 		return (
 		        <div className="container">
+		        Name{this.props.route.name}
+		            <Link to={'/users/new'} className="button">Add</Link>
                     <CreateDialog attributes={this.state.attributes} onCreate={this.onCreate}/>
                     <UserList page={this.state.page}
                                     users={this.state.users}
@@ -348,16 +351,19 @@ class User extends React.Component{
 	render() {
 		return (
 			<tr>
-				<td>{this.props.user.entity.name}</td>
+				<td><Link to={'/user/{this.props.user.entity.name}'}>{this.props.user.entity.name}</Link></td>
 				<td>{this.props.user.entity.email}</td>
 				<td>{this.props.user.entity.sex}</td>
 				<td>
+				    <a onClick={this.handleDelete}><i className="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+				    {/*<i class="fa fa-pencil" aria-hidden="true"></i>
                     <UpdateDialog user={this.props.user}
                 	                attributes={this.props.attributes}
-                					onUpdate={this.props.onUpdate}/>
+                					onUpdate={this.props.onUpdate}/>*/}
                 </td>
 				<td>
-                	<button onClick={this.handleDelete}>Delete</button>
+
+                	<a onClick={this.handleDelete}><i className="fa fa-trash-o" aria-hidden="true"></i></a>
                 </td>
 			</tr>
 		)

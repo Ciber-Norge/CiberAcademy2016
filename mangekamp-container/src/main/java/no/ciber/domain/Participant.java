@@ -15,7 +15,7 @@ import javax.persistence.OneToOne;
 import java.util.Date;
 
 @Data
-@Entity(name = "Participants")
+@Entity(name = "participants")
 public class Participant {
 
     @Id

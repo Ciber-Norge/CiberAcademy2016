@@ -26,3 +26,6 @@ mangekamp-container/src/main/resources/static/built
 # IDEA files
 .idea
 *.iml
+
+# Script files
+*.sh

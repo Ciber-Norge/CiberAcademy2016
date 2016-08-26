@@ -6,6 +6,7 @@ const Events = require('../components/event-form.js');
 const Seasons = require('../components/season-form.js');
 const client = require('./../client');
 const follow = require('./../follow');
+import { Link } from 'react-router'
 
 const root = 'http://localhost:8080/api';
 
@@ -84,7 +85,7 @@ export default class SeasonPage extends React.Component{
 	render() {
 		return (
 		    <div className="container">
-		        <p>Seasons</p>
+		        <Link to='seasons/events/new'>Add Event</Link>
 		        <Events events={this.state.events}
                     links={this.state.links}
                     attributes={this.state.attributes}/>

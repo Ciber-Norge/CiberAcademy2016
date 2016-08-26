@@ -25,7 +25,7 @@ export default class Navbar extends React.Component{
 		                <li className="navbar-item"><Link to={'/users'}>Users</Link></li>
 		                <li className="navbar-item"><Link to={'/seasons'}>Seasons</Link></li>
 		                <li className="navbar-item"><Link to={'/categories'}>Categories</Link></li>
-		                <li className="navbar-item u-pull-right "><a href="#" onClick={this.handleLogout}>Logout</a></li>
+		                <li className="navbar-item u-pull-right"><a href="#" onClick={this.handleLogout}>Logout</a></li>
 		            </ul>
 		        </div>
 		    </nav>

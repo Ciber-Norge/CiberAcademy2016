@@ -10,6 +10,7 @@ const UserNew = require('./pages/user-new');
 const UserDetail = require('./pages/user-detail');
 const SeasonPage = require('./pages/season-page');
 const Categories = require('./pages/Categories');
+const EventNew = require('./pages/EventNew');
 
 class App extends React.Component {
     render() {
@@ -28,6 +29,7 @@ const routes =
             <Route path="users" component={UserPage}/>
             <Route path="users/:id" component={UserDetail}/>
             <Route path="seasons" component={SeasonPage}/>
+            <Route path="seasons/events/new" component={EventNew}/>
             <Route path="categories" component={Categories}/>
         </Route>
     </Router>

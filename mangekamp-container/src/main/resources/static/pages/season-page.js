@@ -18,8 +18,7 @@ export default class SeasonPage extends React.Component{
 
     // Populate 'events'
     loadFromServer() {
-            follow(client, root, [
-                    {rel: 'events'}]
+            follow(client, root, ['events']
             ).then(eventCollection => {
                 return client({
                         method: 'GET',
@@ -80,17 +79,20 @@ export default class SeasonPage extends React.Component{
 	componentDidMount() {
 		this.loadFromServer();
 	}
-
+              /*  <Seasons seasons={this.state.seasons}
+                    links={this.state.links}
+                    attributes={this.state.attributes}/>
+                		        <Events events={this.state.events}
+                                    links={this.state.links}
+                                    attributes={this.state.attributes}/>
+                */
 	render() {
 		return (
 		    <div className="container">
-		        <p>Seasons</p>
-		        <Events events={this.state.events}
-                    links={this.state.links}
-                    attributes={this.state.attributes}/>
-                <Seasons seasons={this.state.seasons}
-                    links={this.state.links}
-                    attributes={this.state.attributes}/>
+		        <Seasons seasons={this.state.seasons}
+                            links={this.state.links}
+                            attributes={this.state.attributes}/>
+
 		    </div>
 		)
 	}

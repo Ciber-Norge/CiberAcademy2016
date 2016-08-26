@@ -1,7 +1,7 @@
 
 const React = require('react');
 const when = require('when');
-const client = require('./../client');
+    const client = require('./../client');
 const follow = require('./../follow');
 
 const root = 'http://localhost:8080/api';

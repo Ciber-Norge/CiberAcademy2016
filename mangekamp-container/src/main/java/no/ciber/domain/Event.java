@@ -50,5 +50,6 @@ public class Event {
     private Date updatedAt;
 
     public Event() {
+
     }
 }

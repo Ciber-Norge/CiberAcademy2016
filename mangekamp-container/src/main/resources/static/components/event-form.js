@@ -2,7 +2,11 @@
 
 const React = require('react');
 const when = require('when');
+const client = require('./../client');
+const Event = require('./event.js')
 
+const root = 'http://localhost:8080/api';
+import {Link} from 'react-router'
 class EventList extends React.Component {
 
 	constructor(props) {
@@ -11,9 +15,8 @@ class EventList extends React.Component {
 
     render() {
         var events = this.props.events.map(event =>
-            <Event key={event.entity._links.self.href}
+            <Event key={event._links.self.href}
                     event={event}/>);
-
         return (
             <div>
                 <table>
@@ -22,36 +25,11 @@ class EventList extends React.Component {
                         <th>Sport</th>
                         <th>Venue</th>
                         <th>Date</th>
-                        <th>Season</th>
                         <th>Category</th>
-                        <th>Participants</th>
-                        <th>Results</th>
                     </tr>
                     {events}
                 </table>
             </div>
-        )
-    }
-}
-
-class Event extends React.Component {
-
-	constructor(props) {
-		super(props);
-    }
-    render() {
-
-    return(
-            <tr>
-                <td>{this.props.event.entity.title}</td>
-                <td>{this.props.event.entity.sport}</td>
-                <td>{this.props.event.entity.venue}</td>
-                <td>{this.props.event.entity.date}</td>
-                <td> Dummy </td>
-                <td> Dummy </td>
-                <td> Dummy </td>
-                <td> Dummy </td>
-            </tr>
         )
     }
 }
